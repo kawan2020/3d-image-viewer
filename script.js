@@ -1,5 +1,5 @@
-// 💡 CHANGE THIS NUMBER TO CONTROL THE NUMBER OF FACES / IMAGES (e.g. 4, 6, 8)
-const TOTAL_IMAGES = 4; 
+// 💡 CHANGE THIS NUMBER TO CONTROL THE NUMBER OF FACES / IMAGES (e.g., 4, 6, 8)
+const TOTAL_IMAGES = 6; 
 
 let currentIndex = 0;
 let isFullscreen = false;
@@ -87,7 +87,6 @@ document.addEventListener('touchend', (e) => {
 
 // Laptop Mouse Drag Events
 document.addEventListener('mousedown', (e) => {
-  // Prevent button clicks from triggering drag starts
   if (e.target === prevBtn || e.target === nextBtn) return;
   isDragging = true;
   handleStart(e.clientX);
@@ -104,7 +103,6 @@ function handleStart(clientX) {
   startX = clientX;
   startTime = new Date().getTime();
 
-  // Double-tap or double-click detection
   const now = new Date().getTime();
   if (now - lastTap < 300 && now - lastTap > 0) {
     toggleFullscreen();
@@ -167,13 +165,11 @@ function updateGallery(isFastSwipe = false, direction = '') {
     }
   }
 
-  // Update Dots
   const dotsList = document.querySelectorAll('.dot');
   dotsList.forEach((dot, index) => {
     dot.classList.toggle('active', index === currentIndex);
   });
 
-  // Toggle Header
   if (currentIndex > 0 || isFullscreen) {
     header.classList.add('hidden');
   } else {
