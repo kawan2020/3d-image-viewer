@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>3D Image Viewer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Landscape Warning -->
+  <div id="landscape-warning">
+    <p>📱 Please rotate your device to portrait mode for the best viewing experience.</p>
+  </div>
+
+  <!-- Header (Only visible on page 1) -->
+  <header id="main-header">
+    <h2>3D Gallery</h2>
+    <p>Swipe left/right • Double tap to expand</p>
+  </header>
+
+  <!-- 3D Scene Viewport -->
+  <div class="scene">
+    <!-- Desktop Navigation Arrows -->
+    <button class="nav-arrow prev-arrow" id="prev-btn" aria-label="Previous Image">&#10094;</button>
+    
+    <div class="box" id="box">
+      <!-- Images injected via JavaScript -->
+    </div>
+
+    <button class="nav-arrow next-arrow" id="next-btn" aria-label="Next Image">&#10095;</button>
+  </div>
+
+  <!-- Pagination Dots Indicator -->
+  <div class="pagination-dots" id="pagination-dots">
+    <!-- Dots injected via JavaScript -->
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
