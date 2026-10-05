@@ -1,7 +1,8 @@
-// 💡 CHANGE THIS NUMBER TO CONTROL THE NUMBER OF FACES / IMAGES
-const TOTAL_IMAGES = 6; 
+// 💡 CHANGE THIS NUMBER TO CONTROL THE NUMBER OF FACES / IMAGES (e.g. 6)
+const TOTAL_IMAGES = 5; 
 
 let currentIndex = 0;
+let rotationStepCount = 0; // Cumulative step counter for seamless infinite 3D rotation
 let isFullscreen = false;
 
 // Zoom & Pan state for Image Mode
@@ -82,7 +83,6 @@ function applyImageTransform() {
   }
 }
 
-// Helper: Calculate distance between two touch points for pinch-zoom
 function getDistance(touches) {
   return Math.hypot(
     touches[0].clientX - touches[1].clientX,
@@ -90,34 +90,30 @@ function getDistance(touches) {
   );
 }
 
-// 2. Desktop Button Click Navigation
+// 2. Desktop Navigation Arrows (Infinite Rotation)
 if (prevBtn && nextBtn) {
   prevBtn.addEventListener('click', () => {
-    if (currentIndex > 0) {
-      currentIndex--;
-      updateGallery(true, 'right');
-    }
+    rotationStepCount--;
+    currentIndex = (currentIndex - 1 + TOTAL_IMAGES) % TOTAL_IMAGES;
+    updateGallery(true, 'right');
   });
 
   nextBtn.addEventListener('click', () => {
-    if (currentIndex < TOTAL_IMAGES - 1) {
-      currentIndex++;
-      updateGallery(true, 'left');
-    }
+    rotationStepCount++;
+    currentIndex = (currentIndex + 1) % TOTAL_IMAGES;
+    updateGallery(true, 'left');
   });
 }
 
-// 3. Touch & Mouse Events
+// 3. Touch & Mouse Event Handlers
 let startX = 0;
 let startY = 0;
 let startTime = 0;
 let isDragging = false;
 let lastTap = 0;
 
-// Mobile Touch Events
 document.addEventListener('touchstart', (e) => {
   if (e.touches.length === 2 && isFullscreen) {
-    // Pinch-Zoom Start
     startPinchDistance = getDistance(e.touches);
     initialScale = scale;
     return;
@@ -125,7 +121,6 @@ document.addEventListener('touchstart', (e) => {
 
   if (e.touches.length === 1) {
     if (isFullscreen && scale > 1) {
-      // Pan Start when zoomed in Image Mode
       isPanning = true;
       startPanX = e.touches[0].clientX - translateX;
       startPanY = e.touches[0].clientY - translateY;
@@ -138,7 +133,6 @@ document.addEventListener('touchstart', (e) => {
 document.addEventListener('touchmove', (e) => {
   if (isFullscreen) {
     if (e.touches.length === 2) {
-      // Mobile Pinch-Zoom
       e.preventDefault();
       const currentDistance = getDistance(e.touches);
       if (startPinchDistance > 0) {
@@ -153,7 +147,6 @@ document.addEventListener('touchmove', (e) => {
     }
 
     if (e.touches.length === 1 && isPanning && scale > 1) {
-      // Mobile Pan Image
       e.preventDefault();
       translateX = e.touches[0].clientX - startPanX;
       translateY = e.touches[0].clientY - startPanY;
@@ -173,7 +166,6 @@ document.addEventListener('touchend', (e) => {
   }
 });
 
-// Laptop Mouse Drag & Pan Events
 document.addEventListener('mousedown', (e) => {
   if (e.target === prevBtn || e.target === nextBtn) return;
   
@@ -212,7 +204,6 @@ function handleStart(clientX, clientY) {
   startY = clientY;
   startTime = new Date().getTime();
 
-  // Double-tap or double-click detection
   const now = new Date().getTime();
   if (now - lastTap < 300 && now - lastTap > 0) {
     toggleFullscreen();
@@ -220,27 +211,31 @@ function handleStart(clientX, clientY) {
   lastTap = now;
 }
 
+// Swipe detection logic with infinite continuous looping
 function handleEnd(clientX) {
   const diffX = startX - clientX;
   const timeDiff = new Date().getTime() - startTime;
   const velocity = Math.abs(diffX) / (timeDiff || 1);
 
   if (Math.abs(diffX) > 40) {
-    if (diffX > 0 && currentIndex < TOTAL_IMAGES - 1) {
-      currentIndex++;
+    if (diffX > 0) {
+      // Swiped Left -> Move Next
+      rotationStepCount++;
+      currentIndex = (currentIndex + 1) % TOTAL_IMAGES;
       updateGallery(velocity > 0.6, 'left');
-    } else if (diffX < 0 && currentIndex > 0) {
-      currentIndex--;
+    } else {
+      // Swiped Right -> Move Prev
+      rotationStepCount--;
+      currentIndex = (currentIndex - 1 + TOTAL_IMAGES) % TOTAL_IMAGES;
       updateGallery(velocity > 0.6, 'right');
     }
   }
 }
 
-// Laptop Mouse Scroll Wheel Support (Zoom in Image Mode, Navigate in 3D Mode)
+// Laptop Mouse Scroll Wheel Support (Infinite Rotation)
 document.addEventListener('wheel', (e) => {
   if (isFullscreen) {
     e.preventDefault();
-    // Laptop Mouse Wheel Zoom in Image Mode
     const delta = e.deltaY < 0 ? 0.15 : -0.15;
     scale = Math.min(Math.max(1, scale + delta), 4);
     if (scale === 1) {
@@ -249,18 +244,19 @@ document.addEventListener('wheel', (e) => {
     }
     applyImageTransform();
   } else {
-    // 3D Box Mode Rotation
-    if (e.deltaY > 30 && currentIndex < TOTAL_IMAGES - 1) {
-      currentIndex++;
+    if (e.deltaY > 30) {
+      rotationStepCount++;
+      currentIndex = (currentIndex + 1) % TOTAL_IMAGES;
       updateGallery(false, 'left');
-    } else if (e.deltaY < -30 && currentIndex > 0) {
-      currentIndex--;
+    } else if (e.deltaY < -30) {
+      rotationStepCount--;
+      currentIndex = (currentIndex - 1 + TOTAL_IMAGES) % TOTAL_IMAGES;
       updateGallery(false, 'right');
     }
   }
 }, { passive: false });
 
-// 4. Update Gallery
+// 4. Update Gallery & Rotate 3D Dynamic Prism
 function updateGallery(isFastSwipe = false, direction = '') {
   resetZoomPan();
 
@@ -274,7 +270,7 @@ function updateGallery(isFastSwipe = false, direction = '') {
     });
   } else {
     const angleStep = 360 / TOTAL_IMAGES;
-    let targetAngle = currentIndex * -angleStep;
+    let targetAngle = rotationStepCount * -angleStep;
 
     let overshoot = 0;
     if (isFastSwipe) {
@@ -292,12 +288,14 @@ function updateGallery(isFastSwipe = false, direction = '') {
     }
   }
 
+  // Update Dots
   const dotsList = document.querySelectorAll('.dot');
   dotsList.forEach((dot, index) => {
     dot.classList.toggle('active', index === currentIndex);
   });
 
-  if (currentIndex > 0 || isFullscreen) {
+  // Hide header only in fullscreen/image mode
+  if (isFullscreen) {
     header.classList.add('hidden');
   } else {
     header.classList.remove('hidden');

@@ -5,7 +5,7 @@ html, body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: #0d0d0d; /* Fallback base color */
+  background-color: #0d0d0d;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   touch-action: none;
   user-select: none;
@@ -21,23 +21,15 @@ html, body {
   height: 100vh;
   background-image: url('images/background.jpg');
   background-position: center center;
-
-  /* 💡 ADJUST PATTERN SIZE HERE (Smaller number = Zoomed out / smaller pattern) */
-  background-size: 250px auto;
-  background-repeat: repeat; /* Tiles the pattern seamlessly */
-
+  background-size: 250px auto; /* Adjust pattern size */
+  background-repeat: repeat;
   z-index: 0;
-
-  /* 💡 ADJUST TRANSPARENCY HERE */
   opacity: 0.8;
-
-  /* 💡 ADJUST BRIGHTNESS HERE */
   filter: brightness(100%);
-
   pointer-events: none;
 }
 
-/* Landscape Warning Overlay (Shows on wide mobile landscape screens) */
+/* Landscape Warning Overlay */
 #landscape-warning {
   display: none;
   position: fixed;
@@ -57,20 +49,32 @@ html, body {
   #landscape-warning { display: flex; }
 }
 
-/* Header */
+
+/* Header & Logo Controls */
 #main-header {
   position: fixed;
-  top: 24px;
-  left: 0; width: 100%;
-  text-align: center;
-  color: #ffffff;
+  top: 22px; /* 💡 ADJUST TOP DISTANCE ABOVE THE 3D BOX */
+  left: 0; 
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 100;
   transition: opacity 0.3s ease;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
 }
-#main-header h2 { margin: 0; font-size: 1.4rem; font-weight: 600; letter-spacing: 0.5px; }
-#main-header p { margin: 4px 0 0; font-size: 0.85rem; color: #e0e0e0; }
-#main-header.hidden { opacity: 0; pointer-events: none; }
+
+#main-header.hidden { 
+  opacity: 0; 
+}
+
+/* 💡 LOGO SIZE & TRANSPARENCY CONTROLS */
+.site-logo {
+  width: 65px;        /* 💡 ADJUST LOGO WIDTH (e.g. 60px, 80px, 100px) */
+  height: auto;
+  opacity: 0.95;     /* 💡 ADJUST LOGO TRANSPARENCY (0.1 to 1.0) */
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3)); /* Subtle shadow */
+}
 
 /* 3D Scene Viewport */
 .scene {
@@ -81,10 +85,10 @@ html, body {
   align-items: center;
   perspective: 1200px;
   position: relative;
-  z-index: 10; /* Ensures 3D content sits layered above the background */
+  z-index: 10;
 }
 
-/* Desktop Navigation Arrows (Only on devices with a mouse cursor) */
+/* Desktop Navigation Arrows */
 .nav-arrow {
   display: none;
   position: absolute;
@@ -125,8 +129,8 @@ html, body {
 .box {
   width: 78vw;
   height: 70vh;
-  max-width: 420px;  /* Prevents image over-stretching on wide laptop screens */
-  max-height: 750px; /* Maintains clean portrait proportion on desktop */
+  max-width: 420px;
+  max-height: 750px;
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -137,7 +141,7 @@ html, body {
   cursor: grabbing;
 }
 
-/* Fullscreen Mode (Double-Tap / Double-Click) */
+/* Fullscreen Mode (Image Mode) */
 .box.fullscreen {
   width: 100vw !important;
   height: 100vh !important;
@@ -154,9 +158,9 @@ html, body {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  border-radius: 0; /* Square right-angle corners */
+  border-radius: 0;
   overflow: hidden;
-  background: #ffbf00; /* Frame fill background */
+  background: #ffbf00;
   box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.6);
 }
 
